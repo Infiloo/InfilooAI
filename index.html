@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>InfilooAi – Early Alpha</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="InfilooAi is an advanced AI created by Infiloo. First public Early Alpha version, available via MIT App Inventor.">
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-alt: #0b1020;
+      --accent: #6366f1;
+      --accent-soft: rgba(99,102,241,0.16);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2933;
+      --card: #0f172a;
+      --danger: #f97373;
+      --radius-lg: 18px;
+      --radius-md: 10px;
+      --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
+      --shadow-chip: 0 8px 18px rgba(15,23,42,0.85);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 55%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .shell {
+      max-width: 980px;
+      width: 100%;
+      background: radial-gradient(circle at top left, #111827 0, #020617 60%);
+      border-radius: 28px;
+      border: 1px solid rgba(148,163,184,0.18);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 0% -10%, rgba(56,189,248,0.14) 0, transparent 55%),
+        radial-gradient(circle at 100% 110%, rgba(129,140,248,0.16) 0, transparent 55%);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .inner {
+      position: relative;
+      padding: 26px 26px 28px;
+    }
+
+    /* top bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      background: conic-gradient(
+        from 210deg,
+        #22d3ee,
+        #6366f1,
+        #a855f7,
+        #22d3ee
+      );
+      padding: 2px;
+      box-shadow: 0 0 0 1px rgba(15,23,42,0.75),
+        0 16px 30px rgba(15,23,42,0.9);
+    }
+
+    .avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 11px;
+      background: radial-gradient(circle at 30% 20%, #0f172a 0, #020617 65%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e7eb;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.04em;
+    }
+
+    .repo-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .repo-name {
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      font-size: 14px;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .repo-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(148,163,184,0.35);
+      background: rgba(15,23,42,0.9);
+      color: var(--muted);
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--danger);
+      box-shadow: 0 0 12px rgba(248,113,113,0.9);
+    }
+
+    .badge-pill {
+      background: rgba(37,99,235,0.18);
+      border-color: rgba(129,140,248,0.9);
+      color: #c7d2fe;
+    }
+
+    /* layout */
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.1fr);
+      gap: 22px;
+    }
+
+    @media (max-width: 800px) {
+      .shell {
+        border-radius: 18px;
+      }
+      .inner {
+        padding: 18px 18px 22px;
+      }
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      body {
+        padding: 18px 10px;
+      }
+    }
+
+    /* main column */
+    .card {
+      background: linear-gradient(140deg, rgba(15,23,42,0.96), #020617);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148,163,184,0.28);
+      padding: 18px 18px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      opacity: 0.2;
+      background:
+        linear-gradient(
+          130deg,
+          transparent 0,
+          rgba(129,140,248,0.45) 28%,
+          transparent 55%,
+          rgba(56,189,248,0.3) 82%,
+          transparent 100%
+        );
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .card-header {
+      margin-bottom: 12px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title span.accent {
+      background: linear-gradient(120deg, #a5b4fc, #22d3ee);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .alpha-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #f9a8d4;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(190,24,93,0.18);
+      border: 1px solid rgba(244,114,182,0.85);
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .alert {
+      margin-top: 10px;
+      padding: 9px 10px;
+      border-radius: var(--radius-md);
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(248,113,113,0.7);
+      font-size: 12px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      color: #fecaca;
+    }
+
+    .alert-icon {
+      font-size: 16px;
+      line-height: 1;
+      margin-top: -1px;
+    }
+
+    /* sections */
+    .section {
+      margin-top: 16px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .section-body {
+      font-size: 13px;
+      color: #d1d5db;
+      line-height: 1.6;
+    }
+
+    .chips {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.38);
+      background: rgba(15,23,42,0.94);
+      color: #cbd5f5;
+      box-shadow: var(--shadow-chip);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip-pill {
+      border-color: rgba(129,140,248,0.9);
+      background: rgba(37,99,235,0.3);
+      color: #e0e7ff;
+    }
+
+    .chip-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(74,222,128,0.9);
+    }
+
+    /* links block */
+    .links {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .links {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .link-card {
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.4);
+      background: radial-gradient(circle at top left, #111827 0, #020617 65%);
+      padding: 9px 10px 10px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .link-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .link-main {
+      font-size: 13px;
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .link-main small {
+      font-size: 11px;
+      color: #9ca3af;
+      font-weight: 400;
+    }
+
+    a.link {
+      color: #a5b4fc;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    a.link:hover {
+      text-decoration: underline;
+    }
+
+    /* side column */
+    .side-card {
+      background: linear-gradient(160deg, rgba(15,23,42,0.98), #020617);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148,163,184,0.3);
+      padding: 14px 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .side-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .side-text {
+      font-size: 12px;
+      color: #d1d5db;
+      line-height: 1.5;
+    }
+
+    .list {
+      margin-top: 5px;
+      padding-left: 16px;
+      font-size: 12px;
+      color: #e5e7eb;
+    }
+
+    .list li {
+      margin-bottom: 4px;
+    }
+
+    .footer {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(15,23,42,0.9);
+      padding-top: 8px;
+    }
+
+    .footer a {
+      color: #a5b4fc;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="inner">
+      <div class="top-bar">
+        <div class="top-left">
+          <div class="avatar">
+            <div class="avatar-inner">AI</div>
+          </div>
+          <div class="repo-meta">
+            <div class="repo-name">INFILOOAI</div>
+            <div class="repo-sub">First public Early Alpha · Android (APK)</div>
+          </div>
+        </div>
+        <div class="top-right">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            Early Alpha
+          </div>
+          <div class="badge badge-pill">
+            v0.1 · Public preview
+          </div>
+        </div>
+      </div>
+
+      <div class="layout">
+        <!-- main -->
+        <section class="card">
+          <header class="card-header">
+            <div class="title-row">
+              <h1 class="title">
+                <span class="accent">InfilooAi</span>
+              </h1>
+              <span class="alpha-tag">First Public Version</span>
+            </div>
+            <p class="subtitle">
+              An advanced AI created by Infiloo, exploring intelligent conversation,
+              automation and creative reasoning on mobile – now available as an
+              Early Alpha APK.
+            </p>
+
+            <div class="alert">
+              <span class="alert-icon">⚠️</span>
+              <span>
+                This is the first public release of InfilooAi. Features are experimental,
+                unstable, and may change or break at any time.
+              </span>
+            </div>
+          </header>
+
+          <section class="section">
+            <div class="section-label">Overview</div>
+            <h2 class="section-title">What is InfilooAi?</h2>
+            <p class="section-body">
+              InfilooAi is a next‑generation assistant focused on fast experimentation:
+              talk to it, test ideas and explore AI‑powered workflows directly on your
+              Android device. This build is meant for curious testers and early adopters.
+            </p>
+            <div class="chips">
+              <span class="chip chip-pill">
+                <span class="chip-dot"></span>
+                Advanced AI by Infiloo
+              </span>
+              <span class="chip">Mobile‑first experience</span>
+              <span class="chip">Rapid prototyping</span>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-label">Get started</div>
+            <h2 class="section-title">Download & build</h2>
+            <p class="section-body">
+              To use this version you need an account on the MIT App Inventor
+              AI2 platform. Once logged in, you can either use the shared project
+              or generate your own APK build.
+            </p>
+
+            <div class="links">
+              <article class="link-card">
+                <div class="link-label">Requirement</div>
+                <div class="link-main">
+                  MIT App Inventor AI2 account<br>
+                  <small>Sign in to access the InfilooAi project</small>
+                </div>
+                <a href="https://ai2a.appinventor.mit.edu/" class="link" target="_blank" rel="noreferrer">
+                  https://ai2a.appinventor.mit.edu/
+                </a>
+              </article>
+
+              <article class="link-card">
+                <div class="link-label">Custom APK build</div>
+                <div class="link-main">
+                  Build the InfilooAi APK<br>
+                  <small>Open the gallery project and create your installable app</small>
+                </div>
+                <a href="https://gallery.appinventor.mit.edu/?galleryid=34ca7fd7-09f9-45c2-8b47-68146bfccebe"
+                   class="link" target="_blank" rel="noreferrer">
+                  https://gallery.appinventor.mit.edu/?galleryid=34ca7fd7-09f9-45c2-8b47-68146bfccebe
+                </a>
+              </article>
+            </div>
+          </section>
+        </section>
+
+        <!-- side -->
+        <aside class="side-card">
+          <div>
+            <div class="side-section-title">Status · Early Alpha</div>
+            <p class="side-text">
+              Expect rough edges, missing features and rapid iteration.
+              This build is intended for feedback, not production use.
+            </p>
+            <ul class="list">
+              <li>🚧 Experimental features</li>
+              <li>🔄 Behaviour may change between builds</li>
+              <li>🐞 Bugs & glitches are expected</li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="side-section-title">How to help</div>
+            <p class="side-text">
+              If you test InfilooAi, note what works well and what feels confusing,
+              slow or broken. Share that feedback with Infiloo to influence the next
+              versions.
+            </p>
+          </div>
+
+          <div class="footer">
+            <span>Crafted by Infiloo · InfilooAi · 2026</span>
+            <span>
+              <a href="https://github.com/Infiloo" target="_blank" rel="noreferrer">GitHub</a>
+              &nbsp;·&nbsp;
+              <a href="https://guns.lol/infiloo" target="_blank" rel="noreferrer">Website</a>
+            </span>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
