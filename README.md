@@ -28,9 +28,7 @@ You can also create your own APK build using the MIT App Inventor gallery:
 
 - 🧠 AI-powered text reasoning and response generation  
 - 💬 Conversational system prototype  
-- ⚙️ Modular logic with early automation tools  
-- 🔄 Custom build support via MIT App Inventor  
-- 🔒 Local execution and data protection  
+- 🔄 Custom build support via MIT App Inventor   
 
 ---
 
@@ -43,10 +41,8 @@ Your testing, feedback, and curiosity will help shape the next version of Infilo
 
 ## 💡 Roadmap
 
-- [ ] Improve AI logic and stability  
-- [ ] Add new automation tools  
+- [ ] Improve AI logic and stability   
 - [ ] Expand user interface options  
-- [ ] Publish developer API  
 - [ ] Prepare for public beta  
 
 ---
